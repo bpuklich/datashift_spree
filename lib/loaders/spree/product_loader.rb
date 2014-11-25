@@ -45,7 +45,7 @@ module DataShift
         # In >= 1.1.0 Image moved to master Variant from Product so no association called Images on Product anymore
         
         # Non Product/database fields we can still  process
-        @we_can_process_these_anyway =  ['images',  "variant_price", "variant_sku"]
+        @we_can_process_these_anyway =  ['images',  "variant_price", "variant_sku", "variant_images"]
           
         # In >= 1.3.0 price moved to master Variant from Product so no association called Price on Product anymore
         # taking care of it here, means users can still simply just include a price column
@@ -142,7 +142,28 @@ module DataShift
           else
             super
           end
-          
+
+        elsif(current_method_detail.operator?('variant_images') && current_value)
+
+          if(@load_object.variants.size > 0)
+
+            if(current_value.to_s.include?(Delimiters::multi_assoc_delim))
+
+              # Check if we processed Option Types and assign  per option
+              values = current_value.to_s.split(Delimiters::multi_assoc_delim)
+
+              if(@load_object.variants.size == values.size)
+                @load_object.variants.each_with_index { |v, i| add_images(v, values[i].split(Delimiters::multi_value_delim)) }
+                @load_object.save
+              else
+                puts "WARNING: SKU entries did not match number of Variants - None Set"
+              end
+            end
+
+          else
+            super
+          end
+
         elsif(current_value && (current_method_detail.operator?('count_on_hand') || current_method_detail.operator?('on_hand')) )
 
           # CURRENTLY BROKEN FOR Spree 2.2 - New Stock management : 

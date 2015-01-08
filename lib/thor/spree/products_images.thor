@@ -60,7 +60,7 @@ module DatashiftSpree
       puts "DataShift::Product starting upload from file: #{input}"
 
       opts = options.dup
-      opts[:mandatory] = ['sku', 'name', 'price']
+      opts[:mandatory] = ['name', 'price']
 
       loader.perform_load(input, opts)
     end

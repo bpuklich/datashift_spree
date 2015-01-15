@@ -28,7 +28,9 @@ module DataShift
       super(klass, find_operators, loader_object, options)
 
       logger.info "Spree Loading initialised with:\n#{options.inspect}"
-      
+
+      #TODO - ditch this backward compatability now and just go with namespaced ?
+      #
       @@image_klass ||= DataShift::SpreeHelper::get_spree_class('Image')
       @@option_type_klass ||= DataShift::SpreeHelper::get_spree_class('OptionType')
       @@option_value_klass ||= DataShift::SpreeHelper::get_spree_class('OptionValue')
@@ -76,8 +78,6 @@ module DataShift
       images = variant_images.present? ? variant_images : get_each_assoc
       images.each do |image|
 
-        logger.debug("Processing IMAGE from #{image.inspect}")
-             
         #TODO - make this Delimiters::attributes_start_delim and support {alt=> 'blah, :position => 2 etc}
 
         # Test and code for this saved at : http://www.rubular.com/r/1de2TZsVJz
@@ -85,16 +85,19 @@ module DataShift
         @spree_uri_regexp ||= Regexp::new('(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?' )
         
         if(image.match(@spree_uri_regexp))
-           
-          uri, attributes = image.split(Delimiters::attribute_list_start)
-          
+
+          @attribute_list_regexp ||= Regexp.new( Delimiters::attribute_list_start + ".*" + Delimiters::attribute_list_end)
+          uri = image
+          attributes_raw = uri.slice!(@attribute_list_regexp)
           uri.strip!
           
-          logger.debug("Processing IMAGE from an URI #{uri.inspect} #{attributes.inspect}")
-          
-          if(attributes)
+          logger.info("Processing IMAGE from URI [#{uri.inspect}]")
+
+          if(attributes_raw)
             #TODO move to ColumnPacker unpack ?
-            attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
+            #attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
+            attributes = Populator::string_to_hash( attributes_raw )
+            logger.debug("IMAGE has additional attributes #{attributes.inspect}")
           else
             attributes = {} # will blow things up later if we pass nil where {} expected
           end
@@ -108,12 +111,16 @@ module DataShift
             raise DataShift::BadUri.new("Failed to fetch image from URL #{uri}")
           end
   
-          # Expected class Mechanize::Image 
-  
-          # there is also an method called image.extract_filename - not sure of difference
-          extname = image.respond_to?(:filename) ? File.extname(image.filename) : File.extname(uri)
+          # Expected image is_a Mechanize::Image
+          # image.filename& image.extract_filename do not handle query string well e,g blah.jpg?v=1234
+          # so for now use URI
+          # extname = image.respond_to?(:filename) ? File.extname(image.filename) : File.extname(uri)
+          extname =  File.extname( uri.gsub(/\?.*=.*/, ''))
+
           base = image.respond_to?(:filename) ? File.basename(image.filename, '.*') : File.basename(uri, '.*')
-          
+
+          logger.debug("Storing Image in TempFile #{base.inspect}.#{extname.inspect}")
+
           @current_image_temp_file = Tempfile.new([base, extname], :encoding => 'ascii-8bit')
                     
           begin
@@ -128,6 +135,8 @@ module DataShift
             end           
             
             @current_image_temp_file.rewind
+
+            logger.info("IMAGE downloaded from URI #{uri.inspect} - creating attachment")
 
             # create_attachment(klass, attachment_path, record = nil, attach_to_record_field = nil, options = {})
             attachment = create_attachment(@@image_klass, @current_image_temp_file.path, nil, nil, attributes)

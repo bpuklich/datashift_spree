@@ -67,7 +67,9 @@ module DataShift
       def process(method_detail, value)  
 
         raise ProductLoadError.new("Cannot process #{value} NO details found to assign to") unless(method_detail)
-          
+
+        original_value = value.clone if (method_detail.operator?('variant_images') || method_detail.operator?('images'))
+
         # TODO - start supporting assigning extra data via current_attribute_hash
         current_value, current_attribute_hash = @populator.prepare_data(method_detail, value)
          
@@ -91,7 +93,7 @@ module DataShift
 
         elsif(current_method_detail.operator?('images') && current_value)
 
-          add_images( (SpreeHelper::version.to_f > 1) ? @load_object.master : @load_object )
+          add_images( (SpreeHelper::version.to_f > 1) ? @load_object.master : @load_object, original_value.split(Delimiters::multi_value_delim) )
 
         elsif(current_method_detail.operator?('variant_price') && current_value)
 
@@ -145,10 +147,10 @@ module DataShift
 
           if(@load_object.variants.size > 0)
 
-            if(current_value.to_s.include?(Delimiters::multi_assoc_delim))
+            if(original_value.to_s.include?(Delimiters::multi_assoc_delim))
 
               # Check if we processed Option Types and assign  per option
-              values = current_value.to_s.split(Delimiters::multi_assoc_delim)
+              values = original_value.to_s.split(Delimiters::multi_assoc_delim)
 
               if(@load_object.variants.size == values.size)
                 @load_object.variants.each_with_index { |v, i| add_images(v, values[i].split(Delimiters::multi_value_delim)) }

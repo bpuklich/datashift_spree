@@ -85,16 +85,18 @@ module DataShift
         @spree_uri_regexp ||= Regexp::new('(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?' )
         
         if(image.match(@spree_uri_regexp))
-           
-          uri, attributes = image.split(Delimiters::attribute_list_start)
-          
+
+          @attribute_list_regexp ||= Regexp.new( Delimiters::attribute_list_start + ".*" + Delimiters::attribute_list_end)
+          uri = image
+          attributes_raw = uri.slice!(@attribute_list_regexp)
           uri.strip!
           
           logger.info("Processing IMAGE from URI [#{uri.inspect}]")
 
-          if(attributes)
+          if(attributes_raw)
             #TODO move to ColumnPacker unpack ?
-            attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
+            #attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
+            attributes = Populator::string_to_hash( attributes_raw )
             logger.debug("IMAGE has additional attributes #{attributes.inspect}")
           else
             attributes = {} # will blow things up later if we pass nil where {} expected

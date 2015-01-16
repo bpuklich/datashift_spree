@@ -87,16 +87,29 @@ module DataShift
         if(image.match(@spree_uri_regexp))
 
           @attribute_list_regexp ||= Regexp.new( Delimiters::attribute_list_start + ".*" + Delimiters::attribute_list_end)
-          uri = image
-          attributes_raw = uri.slice!(@attribute_list_regexp)
-          uri.strip!
+          attributes = image.slice!(@attribute_list_regexp)
+          uri = image.strip
           
           logger.info("Processing IMAGE from URI [#{uri.inspect}]")
 
-          if(attributes_raw)
+          if(attributes)
             #TODO move to ColumnPacker unpack ?
-            #attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
-            attributes = Populator::string_to_hash( attributes_raw )
+            @attribute_list_inner_regexp ||= Regexp.new( Delimiters::attribute_list_start + "(.*)" + Delimiters::attribute_list_end)
+            attributes = attributes.slice(@attribute_list_inner_regexp, 1).split(',').map { |h|
+              h1,h2 = h.split('=>');
+              h1.strip!
+              h2.strip!
+              if (h1.match(/^:/))
+                h1 = h1.gsub(/^:/,'').to_sym
+              end
+              if (h2.match(/^'/))
+                h2 = h2.slice(/^'(.*)'$/, 1)
+              end
+              if (h2.match(/^"/))
+                h2 = h2.slice(/^"(.*)"$/, 1)
+              end
+              { h1 => h2 }
+            }.reduce(:merge)
             logger.debug("IMAGE has additional attributes #{attributes.inspect}")
           else
             attributes = {} # will blow things up later if we pass nil where {} expected

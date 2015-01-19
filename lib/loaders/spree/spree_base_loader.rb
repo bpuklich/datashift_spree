@@ -94,22 +94,8 @@ module DataShift
 
           if(attributes)
             #TODO move to ColumnPacker unpack ?
-            @attribute_list_inner_regexp ||= Regexp.new( Delimiters::attribute_list_start + "(.*)" + Delimiters::attribute_list_end)
-            attributes = attributes.slice(@attribute_list_inner_regexp, 1).split(',').map { |h|
-              h1,h2 = h.split('=>');
-              h1.strip!
-              h2.strip!
-              if (h1.match(/^:/))
-                h1 = h1.gsub(/^:/,'').to_sym
-              end
-              if (h2.match(/^'/))
-                h2 = h2.slice(/^'(.*)'$/, 1)
-              end
-              if (h2.match(/^"/))
-                h2 = h2.slice(/^"(.*)"$/, 1)
-              end
-              { h1 => h2 }
-            }.reduce(:merge)
+            # clever code from http://stackoverflow.com/questions/1667630/how-do-i-convert-a-string-object-into-a-hash-object
+            attributes = ActiveSupport::JSON.decode(attributes.gsub(/:([a-zA-z]+)/,'"\\1"').gsub('=>', ': ')).symbolize_keys
             logger.debug("IMAGE has additional attributes #{attributes.inspect}")
           else
             attributes = {} # will blow things up later if we pass nil where {} expected

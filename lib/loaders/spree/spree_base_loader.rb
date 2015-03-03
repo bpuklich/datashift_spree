@@ -87,8 +87,10 @@ module DataShift
         @spree_uri_regexp ||= Regexp::new('(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?' )
         
         if(image.match(@spree_uri_regexp))
-           
-          uri, attributes = image.split(Delimiters::attribute_list_start)
+
+          @attribute_list_regexp ||= Regexp.new( Delimiters::attribute_list_start + ".*" + Delimiters::attribute_list_end)
+          attributes = image.slice!(@attribute_list_regexp)
+          uri = image.strip
           
           logger.info("Processing IMAGE from URI [#{uri.inspect}]")
 

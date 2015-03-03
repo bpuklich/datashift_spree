@@ -95,7 +95,7 @@ module DataShift
 
         elsif(current_method_detail.operator?('images') && current_value)
 
-          add_images( (SpreeHelper::version.to_f > 1) ? @load_object.master : @load_object, original_value.split(Delimiters::multi_assoc_delim) )
+          add_images( (DataShift::SpreeEcom::version.to_f > 1) ? @load_object.master : @load_object, original_value.split(Delimiters::multi_assoc_delim) )
 
         elsif(current_method_detail.operator?('variant_price') && current_value)
 

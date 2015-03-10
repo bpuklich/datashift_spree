@@ -397,13 +397,12 @@ module DataShift
             taxon
           end
 
-          taxons << parent_taxonomy.root
-
-          unique_list = taxons.compact.uniq - (@load_object.taxons || [])
-
-          logger.debug("Product assigned to Taxons : #{unique_list.collect(&:name).inspect}")
-
-          @load_object.taxons << unique_list unless(unique_list.empty?)
+          if @load_object.taxons.include?(taxons.last)
+            logger.debug("Skipping existing taxon: #{taxons.last.inspect}")
+          else
+            logger.debug("Product assigned to taxon: #{taxons.last.inspect}")
+            @load_object.taxons << taxons.last
+          end
           # puts @load_object.taxons.inspect
 
         end

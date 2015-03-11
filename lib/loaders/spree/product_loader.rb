@@ -397,11 +397,12 @@ module DataShift
             taxon
           end
 
-          if @load_object.taxons.include?(taxons.last)
-            logger.debug("Skipping existing taxon: #{taxons.last.inspect}")
+          # assign to the most specific child taxon, which happens to be 'parent'
+          if @load_object.taxons.include?(parent)
+            logger.debug("Skipping existing taxon: #{parent.inspect}")
           else
-            logger.debug("Product assigned to taxon: #{taxons.last.inspect}")
-            @load_object.taxons << taxons.last
+            logger.debug("Product assigned to taxon: #{parent.inspect}")
+            @load_object.taxons << parent
           end
           # puts @load_object.taxons.inspect
 

@@ -331,6 +331,7 @@ module DataShift
 
           raise "Cannot find Property via #{find_by_name} (with value #{find_by_value})" unless(find_by_name)
 
+          find_by_name = find_by_name.downcase
           property = @@property_klass.where(:name => find_by_name).first
 
           unless property

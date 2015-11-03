@@ -278,7 +278,7 @@ module DataShift
             ovname.strip!
 
             #TODO - not sure why I create the OptionValues here, rather than above with the OptionTypes
-            ov = @@option_value_klass.where(:name => ovname, :option_type_id => lead_option_type.id).first_or_create(:presentation => ovname.humanize)
+            ov = @@option_value_klass.find_or_create_by(:name => ovname, :option_type_id => lead_option_type.id) { |ov| ov.presentation = ovname.humanize }
             ov_list << ov if ov
  
             # Process rest of array of types => values
@@ -288,7 +288,7 @@ module DataShift
                 ov_for_composite.strip!
 
                 # Prior Rails 4 - ov = @@option_value_klass.find_or_create_by_name_and_option_type_id(for_composite, ot.id, :presentation => for_composite.humanize)
-                ov = @@option_value_klass.where(:name => ov_for_composite, :option_type_id => ot.id).first_or_create(:presentation => ov_for_composite.humanize)
+                ov = @@option_value_klass.find_or_create_by(:name => ov_for_composite, :option_type_id => ot.id) { |ov| ov.presentation = ov_for_composite.humanize }
 
                 ov_list << ov if(ov)
               end
@@ -371,7 +371,7 @@ module DataShift
 
           parent_name = name_list.shift
 
-          parent_taxonomy = @@taxonomy_klass.where(:name => parent_name).first_or_create
+          parent_taxonomy = @@taxonomy_klass.find_or_create_by(:name => parent_name)
 
           raise DataShift::DataProcessingError.new("Could not find or create Taxonomy #{parent_name}") unless parent_taxonomy
 
@@ -381,7 +381,7 @@ module DataShift
           taxons = name_list.collect do |name|
 
             begin
-              taxon = @@taxon_klass.where(:name => name, :parent_id => parent.id, :taxonomy_id => parent_taxonomy.id).first_or_create
+              taxon = @@taxon_klass.find_or_create_by(:name => name, :parent_id => parent.id, :taxonomy_id => parent_taxonomy.id)
 
               # pre Rails 4 -  taxon = @@taxon_klass.find_or_create_by_name_and_parent_id_and_taxonomy_id(name, parent && parent.id, parent_taxonomy.id)
 

@@ -17,15 +17,15 @@ module DataShift
 
   class SpreeBaseLoader < LoaderBase
 
-    include DataShift::CsvLoading
-    include DataShift::ExcelLoading
     include DataShift::ImageLoading
 
     # depending on version get_product_class should return us right class, namespaced or not
 
     def initialize(klass, loader_object = nil, options = {})
 
-      super(klass, loader_object, options)
+      # super(klass, loader_object, options)
+      super()
+      setup_load_class(klass)
 
       logger.info "Spree Loading initialised with:\n#{options.inspect}"
 

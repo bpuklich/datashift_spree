@@ -36,9 +36,9 @@ module DataShift
 
     def self.get_spree_class(x)
       if(is_namespace_version())    
-        ModelMapper::class_from_string("Spree::#{x}")
+        MapperUtils::class_from_string("Spree::#{x}")
       else
-        ModelMapper::class_from_string(x.to_s)
+        MapperUtils::class_from_string(x.to_s)
       end
     end
       

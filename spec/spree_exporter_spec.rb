@@ -36,11 +36,11 @@ describe 'SpreeExporter' do
 
     expect = result_file('taxon_export_spec.xls')
 
-    exporter = DataShift::ExcelExporter.new(expect)
+    exporter = DataShift::ExcelExporter.new
 
     items = @Taxon_klass.all
 
-    exporter.export(items)
+    exporter.export(expect, items)
 
     expect(File.exists?(expect)).to eq true
   end
@@ -49,11 +49,11 @@ describe 'SpreeExporter' do
 
     expect = result_file('taxon_and_assoc_export_spec.xls')
 
-    exporter = DataShift::ExcelExporter.new(expect)
+    exporter = DataShift::ExcelExporter.new
 
     items = @Taxon_klass.all
       
-    exporter.export_with_associations(@Taxon_klass, items)
+    exporter.export_with_associations(expect, @Taxon_klass, items)
 
     expect(File.exists?(expect)).to eq true
 
@@ -64,9 +64,9 @@ describe 'SpreeExporter' do
 
     expected = result_file('products_assoc_export_spec.xls')
 
-    exporter = DataShift::ExcelExporter.new(expected)
+    exporter = DataShift::ExcelExporter.new
       
-    exporter.export_with_associations(@Product_klass, @Product_klass.all)
+    exporter.export_with_associations(expected, @Product_klass, @Product_klass.all)
 
     puts "Exported Products to #{expected}"
     
@@ -80,9 +80,9 @@ describe 'SpreeExporter' do
 
     expected = result_file('products_assoc_export_spec.csv')
 
-    exporter = DataShift::CsvExporter.new(expected)
+    exporter = DataShift::CsvExporter.new
       
-    exporter.export_with_associations(@Product_klass, @Product_klass.all)
+    exporter.export_with_associations(expected, @Product_klass, @Product_klass.all)
 
     puts "Exported Products to #{expected}"
     

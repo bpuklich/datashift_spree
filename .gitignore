@@ -4,7 +4,7 @@ sandbox
 sandbox/**
 
 # developing a gem so don't commit lock file
-Gemfile.lock
+#Gemfile.lock
 
 *.gem
 .~lock.*

@@ -48,7 +48,8 @@ module DataShift
       end
       
       run_in(path)  do
-        system("spree install --auto-accept") 
+        system("spree install --auto-accept --skip-install-data")
+        system('AUTO_ACCEPT=true bundle exec rake db:migrate db:seed')
       end
       
       puts "Created Spree sandbox store : #{path}"

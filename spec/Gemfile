@@ -6,7 +6,7 @@ source 'https://rubygems.org'
 # DEFINE VERSIONS YOU WANT TO TEST AGAINST HERE
 # THIS SHOULD BASICALLY REPLICATE WHAT IS IN THE SANDBOX GEMFILE
 
-gem 'rails', '4.1.8'
+gem 'rails', '~> 4.2.7'
 
 #DATASHIFT TESTING
 #
@@ -19,7 +19,7 @@ gem 'database_cleaner'
 #if(File.exists?('/home/ruby_user/SoftwareDev/git/datashift'))
 #gem 'datashift',  :path => "/home/ruby_user/SoftwareDev/git/datashift"
 #else
-gem 'datashift', :path => "/home/rubyuser/SoftwareDev/git/datashift"
+gem 'datashift', git: 'https://github.com/excelcycle/datashift', branch: '0-40-stable'
 #end
 
 # we want to test both JRuby and non JRuby especially for Excel
@@ -36,7 +36,7 @@ end
 # FROM SANDBOX GEMFILE
 
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 4.0.2'
+gem 'sass-rails'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
@@ -66,12 +66,10 @@ end
 # For rspec you  may need to add them in here or you'll get missing Spree constants
 #TODO - update  sandbox code so it automatically adds Spree gems in here
 
-spree_version = '2-3-stable'
+spree_version = '3-0-stable'
 
-gem 'spree', github: 'spree/spree', branch: spree_version
-gem 'spree_gateway', :git => 'https://github.com/spree/spree_gateway.git', :branch => spree_version
-gem 'spree_bootstrap_frontend', github: '200Creative/spree_bootstrap_frontend', branch: spree_version
-gem 'spree_auth_devise', :git => 'https://github.com/spree/spree_auth_devise.git', branch: spree_version
+gem 'spree', git: 'https://github.com/spree/spree', branch: spree_version
+gem 'spree_auth_devise', git: 'https://github.com/spree/spree_auth_devise.git', branch: spree_version
 
 
 gem 'paperclip'

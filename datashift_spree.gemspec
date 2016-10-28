@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.15"
   s.summary = "Product and image import/export for Spree from Excel/CSV"
   
-  s.add_runtime_dependency 'datashift', '~> 0.15', '>= 0.15.0'
+  s.add_runtime_dependency 'datashift', '~> 0.40', '>= 0.40.0'
   s.add_runtime_dependency 'mechanize', '~> 2.6', '>= 2.6.0'
 
   # should work with any version of spree so  leave it to the client app to define

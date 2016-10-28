@@ -72,7 +72,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-shared_context 'Populate dictionary ready for Product loading' do
+  shared_context 'Populate dictionary ready for Product loading' do
 
     set_spree_class_helpers
 
@@ -93,13 +93,16 @@ shared_context 'Populate dictionary ready for Product loading' do
     before do
       begin
 
-        DataShift::MethodDictionary.clear
+        DataShift::ModelMethods::Catalogue.clear
+        DataShift::ModelMethods::Manager.clear
 
-        # For Spree important to get instance methods too as Product delegates
-        # many important attributes to Variant (master)
-        DataShift::ModelMethodsManager.find_methods( product_klass, :instance_methods => true )
-
-        DataShift::MethodDictionary.build_method_details( product_klass )
+        # DataShift::MethodDictionary.clear
+        #
+        # # For Spree important to get instance methods too as Product delegates
+        # # many important attributes to Variant (master)
+        # DataShift::MethodDictionary.find_operators( product_klass, :instance_methods => true )
+        #
+        # DataShift::MethodDictionary.build_method_details( product_klass )
 
       rescue => e
         puts e.inspect

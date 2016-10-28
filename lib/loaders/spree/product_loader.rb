@@ -28,7 +28,7 @@ module DataShift
 
         super( DataShift::SpreeEcom::get_product_class, product, opts)
 
-        raise "Failed to create Product for loading" unless @load_object
+        raise "Failed to create Product for loading" unless load_object
       end
 
       # Options:

@@ -1,4 +1,4 @@
-# Copyright:: (c) Autotelik Media Ltd 2011
+# Copyright:: (c) Autotelik Media Ltd 2016
 # Author ::   Tom Statter
 # Date ::     Summer 2012
 #
@@ -9,7 +9,7 @@
 #             Provides Loaders and rake tasks specifically tailored for uploading or exporting
 #             Spree Products, associations and Images
 #
-require File.join(File.expand_path(File.dirname(__FILE__)), "spec_helper")
+require "spec_helper"
 
 require 'excel_exporter'
 require 'csv_exporter'
@@ -20,11 +20,8 @@ describe 'SpreeExporter' do
     results_clear()
   end
 
-
   before(:each) do
 
-    # TODO - to get decent export data could maybe call rake db:seed + rake spree_sample:load 
-    # 
     # Create some test data
     root = @Taxonomy_klass.create( :name => 'Paintings' )
  
@@ -35,6 +32,9 @@ describe 'SpreeExporter' do
   it "should export any Spree model to .xls spreedsheet" do
 
     expect = result_file('taxon_export_spec.xls')
+
+    # Create an Excel file from list of ActiveRecord objects
+   #  def export(file_name, export_records, options = {})
 
     exporter = DataShift::ExcelExporter.new
 
@@ -66,7 +66,7 @@ describe 'SpreeExporter' do
 
     exporter = DataShift::ExcelExporter.new
       
-    exporter.export_with_associations(expected, @Product_klass, @Product_klass.all)
+    exporter.export_with_associations(expected, Spree::Product, Spree::Product.all)
 
     puts "Exported Products to #{expected}"
     
@@ -74,15 +74,14 @@ describe 'SpreeExporter' do
 
   end
   
-  
-   
+
   it "should export Products with all associations to CSV" do
 
     expected = result_file('products_assoc_export_spec.csv')
 
     exporter = DataShift::CsvExporter.new
       
-    exporter.export_with_associations(expected, @Product_klass, @Product_klass.all)
+    exporter.export_with_associations(expected, Spree::Product, Spree::Product.all)
 
     puts "Exported Products to #{expected}"
     

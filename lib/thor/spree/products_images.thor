@@ -13,9 +13,7 @@
 # Note, not DataShift, case sensitive, create namespace for command line : datashift
 
 require 'spree'
-
 require 'datashift_spree'
-
 require 'spree_ecom'
 
 module DatashiftSpree 
@@ -43,7 +41,7 @@ module DatashiftSpree
 
       require 'product_loader'
 
-      loader = DataShift::SpreeEcom::ProductLoader.new( nil, {:verbose => options[:verbose]})
+      loader = DataShift::SpreeEcom::ProductLoader.new(input)
 
       # YAML configuration file to drive defaults etc
 
@@ -51,7 +49,6 @@ module DatashiftSpree
         raise "Bad Config - Cannot find specified file #{options[:config]}" unless File.exists?(options[:config])
 
         puts "DataShift::Product proccssing config from: #{options[:config]}"
-
         loader.configure_from( options[:config] )
       else
         loader.populator.set_default_value('available_on', Time.now.to_s(:db) )
@@ -63,10 +60,7 @@ module DatashiftSpree
 
       puts "DataShift::Product starting upload from file: #{input}"
 
-      opts = options.dup
-      opts[:mandatory] = ['name', 'price']
-
-      loader.perform_load(input, opts)
+      loader.run(input, opts)
     end
 
 
@@ -82,7 +76,7 @@ module DatashiftSpree
 
       loader = DataShift::SpreeEcom::ImageLoader.new(nil, options)
 
-      loader.perform_load( options[:input], options )
+      loader.run( options[:input], options )
     end
 
 

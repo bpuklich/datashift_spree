@@ -7,7 +7,7 @@
 #               Currently covers :
 #                 Promotions
 #
-require 'spree_base_loader'
+require 'spree_loader_base'
 require 'spree_ecom'
 require 'promotions_rules_actions.rb'
 
@@ -15,7 +15,7 @@ module DataShift
 
   module SpreeEcom
 
-    class ShopifyPromotionsMigrator < SpreeBaseLoader
+    class ShopifyPromotionsMigrator < SpreeLoaderBase
 
       # Options
       #  
@@ -36,8 +36,8 @@ module DataShift
       # Options:
       #   [:dummy]           : Perform a dummy run - attempt to load everything but then roll back
       #
-      def perform_load( file_name, opts = {} )
-        logger.info "Shopify perform_load for Promotions from File [#{file_name}]"
+      def run( file_name, opts = {} )
+        logger.info "Shopify run for Promotions from File [#{file_name}]"
         super(file_name, opts)
       end
 
@@ -61,8 +61,8 @@ module DataShift
             #  e.g 1           : \d => number used, no usage limit
             #  e.g 2/10        : \d/\d e.g 2/10 => number used / max usage limit
             #  e.g 1 out of 1  : \d/ out of \d  => number used / max usage limit
-            limit_regexp1 = Regexp.new('\d\/(\d+)')
-            limit_regexp2 = Regexp.new('\d+ out of (\d+)')
+            limit_regexp1 = Regexp.new('(\d+)\/(\d+)')
+            limit_regexp2 = Regexp.new('(\d+) out of (\d+)')
 
             @sheet.each_with_index do |row, i|
 
@@ -95,12 +95,17 @@ module DataShift
                 shopify_usage_rule = row[2].to_s
 
                 if(shopify_usage_rule.match(limit_regexp1))
-                  load_object.usage_limit =  $1.to_f
-                  logger.info("Promo has usage - Limit Set : [#{$1}]")
+                  load_object.historical_usage = $1.to_i
+                  load_object.usage_limit =  $2.to_f
+                  logger.info("Promo has usage (#{$1}) - Limit Set : [#{$2}]")
 
                 elsif(shopify_usage_rule.match(limit_regexp2))
-                  load_object.usage_limit =  $1.to_f
-                  logger.info("Promo has usage - Limit Set : [#{$1}]")
+                  load_object.historical_usage = $1.to_i
+                  load_object.usage_limit =  $2.to_f
+                  logger.info("Promo has usage (#{$1}) - Limit Set : [#{$2}]")
+
+                else
+                  load_object.historical_usage = shopify_usage_rule.to_i
 
                 end
 

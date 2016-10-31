@@ -1,11 +1,9 @@
 require 'rake'
 
-
-
 Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
-  s.name = 'datashift_spree'#Helper::gem_name
-  s.version = '0.6.1'
+  s.name = 'datashift_spree'
+  s.version = '0.6.0'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Thomas Statter"]
@@ -26,8 +24,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.15"
   s.summary = "Product and image import/export for Spree from Excel/CSV"
-  
-  s.add_runtime_dependency 'datashift', '~> 0.40', '>= 0.40.0'
+
+  s.add_runtime_dependency 'rails', '>= 4.2', '< 5.1'
+  s.add_runtime_dependency 'datashift'
   s.add_runtime_dependency 'mechanize', '~> 2.6', '>= 2.6.0'
 
   # should work with any version of spree so  leave it to the client app to define

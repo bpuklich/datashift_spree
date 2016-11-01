@@ -3,7 +3,13 @@ source 'https://rubygems.org'
 
 gem "datashift_spree", path: '..'
 
-gem 'datashift', :git => 'https://github.com/autotelik/datashift.git', branch: :master
+
+if File.exists?('../../datashift')
+  gem 'datashift', path: '../../datashift'
+else
+  # gem 'datashift', :path => "/home/rubyuser/SoftwareDev/git/datashift"
+  gem 'datashift', :git => 'https://github.com/excelcycle/datashift', branch: 'master'
+end
 
 # This Gemfile is for TESTING really.
 
@@ -17,10 +23,10 @@ gem 'datashift', :git => 'https://github.com/autotelik/datashift.git', branch: :
 
 spree_version = '3-1-stable'
 
-gem 'spree', github: 'spree/spree', branch: spree_version
+gem 'spree', git: 'https://github.com/spree/spree', branch: spree_version
 gem 'spree_auth_devise', :git => 'https://github.com/spree/spree_auth_devise.git', branch: spree_version
 gem 'spree_gateway', :git => 'https://github.com/spree/spree_gateway.git', :branch => spree_version
-gem 'spree_digital', github: 'spree-contrib/spree_digital', :branch => spree_version
+gem 'spree_digital', git: 'https://github.com/spree-contrib/spree_digital', :branch => spree_version
 
 #gem 'spree_bootstrap_frontend', github: '200Creative/spree_bootstrap_frontend', branch: spree_version
 

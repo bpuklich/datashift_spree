@@ -40,7 +40,7 @@ module DataShift
     def self.spree_install_cmds
       system("rails g spree:install --user_class=Spree::User --auto-accept --migrate --no-seed")
       system("rails g spree:auth:install")
-      system("rails g spree_gateway:install")
+      system("rails g spree_gateway:install --auto-run-migrations")
       system('rails g spree_digital:install --auto-run-migrations')
     end
 
@@ -55,22 +55,36 @@ module DataShift
       rails_sandbox_root = File.expand_path("#{spree_sandbox_path}/..")
 
       run_in(rails_sandbox_root)  do
-        system('rails new ' + spree_sandbox_name)
+        system('rails new ' + spree_sandbox_name + ' --skip-bundle --skip-spring')
       end
 
       # Now add any gems required specifically for datashift_spree to the Gemfile
 
       gem_string = "\n\n#RSPEC datashift-spree testing\ngem 'datashift_spree',  :path => \"#{File.expand_path(rails_sandbox_root + '/..')}\"\n"
 
-      gem_string += "\ngem 'datashift', :git => 'https://github.com/autotelik/datashift.git', branch: :master\n"
+      if(Gem.loaded_specs['datashift'])
+        if File.exists?('../../datashift')
+          gem_string += "\ngem 'datashift', path: '../../../datashift', branch: 'update-upstream-master'\n"
+        else
+          gem_string += "\ngem 'datashift', '#{Gem.loaded_specs['datashift'].version.version}'\n"
+        end
+      else
+        gem_string += "\ngem 'datashift', :git => 'https://github.com/excelcycle/datashift.git', branch: :master\n"
+      end
 
-      gem_string += "\ngem 'spree_digital', github: 'spree-contrib/spree_digital', :branch => spree_version\n"
+      spree_version = '3-1-stable'
+
+      gem_string += "\ngem 'spree', git: 'https://github.com/spree/spree', branch: '#{spree_version}'\n"
+      gem_string += "\ngem 'spree_auth_devise', git: 'https://github.com/spree/spree_auth_devise.git', branch: '#{spree_version}'\n"
+      gem_string += "\ngem 'spree_gateway', git: 'https://github.com/spree/spree_gateway.git', :branch => '#{spree_version}'\n"
+      gem_string += "\ngem 'spree_digital', git: 'https://github.com/spree-contrib/spree_digital', :branch => '#{spree_version}'\n"
 
       File.open("#{spree_sandbox_path}/Gemfile", 'a') { |f| f << gem_string }
 
       # ***** SPREE INSTALL COMMANDS ****
 
       run_in(spree_sandbox_path)  do
+        system("bundle install")
         spree_install_cmds
 
       end

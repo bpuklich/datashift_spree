@@ -19,7 +19,7 @@ node {
                 set -e
                 cd spec
                 rvm use ruby-2.2.5@datashift_spree-$BRANCH_NAME
-                bundle exec rspec -c .
+                bundle exec rspec -c -I . .
             '''
         }
         stage('Cleanup') {

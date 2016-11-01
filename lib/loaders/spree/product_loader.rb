@@ -6,6 +6,7 @@
 # Details::   Specific over-rides/additions to support Spree Products
 #
 require 'spree_ecom'
+require 'spree_loading'
 
 module DataShift
 
@@ -13,7 +14,7 @@ module DataShift
 
     class ProductLoader
 
-      include SpreeLoading
+      include DataShift::SpreeLoading
 
       attr_accessor :file_name
 

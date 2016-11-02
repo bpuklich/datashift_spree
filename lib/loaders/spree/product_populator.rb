@@ -353,13 +353,21 @@ module DataShift
             taxon
           end
 
-          taxons << parent_taxonomy.root
+          # assign to the most specific child taxon, which happens to be 'parent'
+          if @product_load_object.taxons.include?(parent)
+            logger.debug("Skipping existing taxon: #{parent.inspect}")
+          else
+            logger.debug("Product assigned to taxon: #{parent.inspect}")
+            @product_load_object.taxons << parent
+          end
 
-          unique_list = taxons.compact.uniq - (@product_load_object.taxons || [])
-
-          logger.debug("Product assigned to Taxons : #{unique_list.collect(&:name).inspect}")
-
-          @product_load_object.taxons << unique_list unless(unique_list.empty?)
+          # taxons << parent_taxonomy.root
+          #
+          # unique_list = taxons.compact.uniq - (@product_load_object.taxons || [])
+          #
+          # logger.debug("Product assigned to Taxons : #{unique_list.collect(&:name).inspect}")
+          #
+          # @product_load_object.taxons << unique_list unless(unique_list.empty?)
           # puts @product_load_object.taxons.inspect
 
         end

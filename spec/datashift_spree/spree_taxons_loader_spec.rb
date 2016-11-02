@@ -80,8 +80,8 @@ describe 'SpreeLoader' do
      
     p2 = @Variant_klass.find_by_sku("DEMO_002").product
 
-    expect(p2.taxons.size).to eq 4
-    p2.taxons.collect(&:name).sort.should == ['Nature','Oils','Paintings','Seascape']
+    expect(p2.taxons.size).to eq 3
+    p2.taxons.collect(&:name).sort.should == ['Oils','Paintings','Seascape']
      
     paint_parent = Spree::Taxonomy.find_by_name('Paintings')
 
@@ -96,7 +96,7 @@ describe 'SpreeLoader' do
     tn.should_not be_nil
     
     p2.taxons.collect( &:id ).should include(ts.id)
-    p2.taxons.collect( &:id ).should include(tn.id)
+    p2.taxons.collect( &:id ).should_not include(tn.id)
 
      
     tn.parent.id.should == paint_parent.root.id

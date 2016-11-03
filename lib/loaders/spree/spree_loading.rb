@@ -94,8 +94,7 @@ module DataShift
 
         if(image.match(spree_uri_regexp))
 
-          @attribute_list_regexp ||= Regexp.new(attribute_list_start + ".*" + attribute_list_end)
-          attributes = image.slice!(@attribute_list_regexp)
+          attributes = image.slice!(Populator.attribute_hash_const_regexp)
           uri = image.strip
 
           logger.info("Processing IMAGE from URI [#{uri.inspect}]")

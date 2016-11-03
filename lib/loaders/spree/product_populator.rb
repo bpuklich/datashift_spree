@@ -20,7 +20,7 @@ module DataShift
 
       def prepare_and_assign_method_binding(method_binding, record, data)
 
-        foo = data.clone if (method_binding.operator?('images') || method_binding.operator?('Images'))
+        foo = data.clone if (data && (method_binding.operator?('images') || method_binding.operator?('Images')))
         prepare_data(method_binding, data)
 
         @product_load_object = record

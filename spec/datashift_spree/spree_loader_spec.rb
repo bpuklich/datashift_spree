@@ -153,7 +153,7 @@ describe 'SpreeLoader' do
 
       Spree::Product.all do |p|
         p.sku.should.include "SPEC_"
-        p.cost_price = 1.0
+        expect(p.cost_price).to eq 1.0
         expect(p.available_on).to eq  @expected_time
         expect(p.meta_description).to eq  'super duper meta desc.'
         expect(p.meta_keywords).to eq  'techno dubstep d&b'

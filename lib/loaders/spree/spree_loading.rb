@@ -7,6 +7,7 @@
 #
 
 require 'loaders/paperclip/image_loading'
+require 'mechanize'
 
 module DataShift
 
@@ -87,21 +88,23 @@ module DataShift
 
       owner ||=  DataShift::SpreeEcom::get_image_owner(record)
 
-      value.to_s.split(multi_assoc_delim).each do |image|
+      original_data.to_s.split(multi_assoc_delim).each do |image|
 
         #TODO - make this attributes_start_delim and support {alt=> 'blah, :position => 2 etc}
 
         if(image.match(spree_uri_regexp))
 
-          uri, attributes = image.split(attribute_list_start)
-
-          uri.strip!
+          @attribute_list_regexp ||= Regexp.new(attribute_list_start + ".*" + attribute_list_end)
+          attributes = image.slice!(@attribute_list_regexp)
+          uri = image.strip
 
           logger.info("Processing IMAGE from URI [#{uri.inspect}]")
 
           if(attributes)
             #TODO move to ColumnPacker unpack ?
-            attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
+            # attributes = attributes.split(', ').map{|h| h1,h2 = h.split('=>'); {h1.strip! => h2.strip!}}.reduce(:merge)
+            # clever code from http://stackoverflow.com/questions/1667630/how-do-i-convert-a-string-object-into-a-hash-object
+            attributes = ActiveSupport::JSON.decode(attributes.gsub(/:([a-zA-z]+)/,'"\\1"').gsub('=>', ': ')).symbolize_keys
             logger.debug("IMAGE has additional attributes #{attributes.inspect}")
           else
             attributes = {} # will blow things up later if we pass nil where {} expected

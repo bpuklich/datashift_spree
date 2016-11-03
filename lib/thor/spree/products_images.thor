@@ -60,7 +60,7 @@ module DatashiftSpree
 
       puts "DataShift::Product starting upload from file: #{input}"
 
-      loader.run(input, opts)
+      loader.run
     end
 
 

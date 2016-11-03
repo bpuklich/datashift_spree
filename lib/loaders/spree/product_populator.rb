@@ -20,6 +20,7 @@ module DataShift
 
       def prepare_and_assign_method_binding(method_binding, record, data)
 
+        foo = data.clone if (method_binding.operator?('images') || method_binding.operator?('Images'))
         prepare_data(method_binding, data)
 
         @product_load_object = record
@@ -45,6 +46,7 @@ module DataShift
           # This loads images to Product or Product Master Variant depending on Spree version
         elsif(method_binding.operator?('images') || method_binding.operator?('Images'))
 
+          @original_data = foo # reset to what add_images method expects - unaltered by prepare_data method!
           add_images( product_load_object.master )
 
           # This loads images to Product Variants
